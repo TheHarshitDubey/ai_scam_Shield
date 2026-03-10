@@ -145,8 +145,11 @@ class _AnalyzepageState extends State<Analyzepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFF8FAFC),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap:()=> FocusManager.instance.primaryFocus?.unfocus(),
+      child:  Scaffold(
+      // backgroundColor: Color(0xFFF8FAFC),
       appBar: AppBar(
         leading: Icon(
           Icons.shield_outlined,
@@ -204,7 +207,7 @@ class _AnalyzepageState extends State<Analyzepage> {
               Text(
                 "AI powered scam detection",
                 style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
+              ),SizedBox(height: 25,),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -239,7 +242,7 @@ class _AnalyzepageState extends State<Analyzepage> {
                           label: Text('Paste Suspicious Message here...'),
                           alignLabelWithHint: true,
                           // border: OutlineInputBorder(
-        
+                              
                           //   borderRadius: BorderRadius.circular(12),
                           // ),
                           enabledBorder: OutlineInputBorder(
@@ -420,7 +423,7 @@ class _AnalyzepageState extends State<Analyzepage> {
              ),
            ), ],),
       ),
-    );
+    ));
   }
 }
 
