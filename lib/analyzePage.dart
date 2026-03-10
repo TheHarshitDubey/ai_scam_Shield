@@ -1,10 +1,13 @@
+import 'package:ai_scam_shield/analytics.dart';
 import 'package:ai_scam_shield/history.dart';
+import 'package:ai_scam_shield/user_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
 
 class Analyzepage extends StatefulWidget {
   const Analyzepage({super.key});
@@ -14,12 +17,18 @@ class Analyzepage extends StatefulWidget {
 }
 
 class _AnalyzepageState extends State<Analyzepage> {
+  
   final TextEditingController _Message = TextEditingController();
+
   bool isLoading = false;
   bool? is_Scam;
   double? confidence;
   String? reply;
   String? response;
+  bool generateReplyLoadingg= false;
+
+
+  
 
   Future<void> pickImageAndExtractText() async {
     final picker = ImagePicker();
@@ -39,6 +48,7 @@ class _AnalyzepageState extends State<Analyzepage> {
 
     setState(() {
       _Message.text = recognizedText.text;
+      
     });
   }
 
@@ -50,17 +60,19 @@ class _AnalyzepageState extends State<Analyzepage> {
       is_Scam = null;
     });
 
-    final url = Uri.parse("http://192.168.1.15:8080/chat");
-
+    final url = Uri.parse("http://10.136.27.1:8080/chat");
+    // print("User ID: ${UserService.userId}");
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"message": _Message.text}),
+        body: jsonEncode({"message": _Message.text,"user_id": UserService.userId}),
       );
+
+      // print ("Data :${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
+        
         setState(() {
           is_Scam = data["is_scam"];
           confidence = data["confidence"];
@@ -81,36 +93,55 @@ class _AnalyzepageState extends State<Analyzepage> {
   }
 
   Future<void> generateReply() async {
-    final url = Uri.parse("http://192.168.1.15:8080/generate-reply");
+  Future<Map<String, dynamic>> fetchReply() async {
+    final url = Uri.parse("http://10.136.27.1:8080/generate-reply");
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"message": _Message.text, "user_id": UserService.userId}),
+    );
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"message": _Message.text}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text("Suggested Reply"),
-            content: Text(data["generated_reply"]),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
-              )
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      print(e);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Failed to load reply");
     }
   }
+
+  //showing dialog box immediately
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Suggested Reply"),
+      content: FutureBuilder<Map<String, dynamic>>(
+        future: fetchReply(), 
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+          
+            return const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasError) {
+           
+            return Text("Error: ${snapshot.error}");
+          } else {
+            
+            return Text(snapshot.data!["generated_reply"]);
+          }
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Close"),
+        )
+      ],
+    ),
+  );
+}
+  
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +192,7 @@ class _AnalyzepageState extends State<Analyzepage> {
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: 20,
               ),
               Text(
                 "Protect Yorself From Digital Fraud",
@@ -260,11 +291,11 @@ class _AnalyzepageState extends State<Analyzepage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 5,),
+                    SizedBox(height: 15,),
                     if (isLoading) const CircularProgressIndicator(),
-              // SizedBox(
-              //   height: 15,
-              // ),
+              SizedBox(
+                height: 15,
+              ),
               if (is_Scam != null)
                 Container(
                   width: double.infinity,
@@ -337,22 +368,21 @@ class _AnalyzepageState extends State<Analyzepage> {
           ),
        
         ),child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
           TextButton(
            style: TextButton.styleFrom(
-              
-              overlayColor: Colors.blue.withOpacity(0.2), 
+              foregroundColor: Colors.black
             ),
             onPressed: () {
-            
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const Analyzepage()));
             },
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Use minimum space
+              mainAxisSize: MainAxisSize.min, 
               children: [
                 Icon(Icons.shield_outlined, size: 18.0), // Your icon
-               //  SizedBox(height: 2.0),       // Optional space between icon and text
-                Text("Analyze"),                 // Your text
+               //  SizedBox(height: 2.0),      
+                Text("Analyze"),                
               ],
             ),
           ),
@@ -360,34 +390,32 @@ class _AnalyzepageState extends State<Analyzepage> {
         TextButton(
             style: TextButton.styleFrom(
                
-               overlayColor: Colors.blue.withOpacity(0.2), 
+               foregroundColor:Colors.black 
              ),
              onPressed: () {
              Navigator.push(context, MaterialPageRoute(builder: (context)=>const History()));
              },
              child: Column(
-               mainAxisSize: MainAxisSize.min, // Use minimum space
+               mainAxisSize: MainAxisSize.min, 
                children: [
-                 Icon(Icons.access_time, size: 18.0), // Your icon
-                //  SizedBox(height: 2.0),       // Optional space between icon and text
-                 Text("History"),                 // Your text
+                 Icon(Icons.access_time, size: 18.0), 
+                 Text("History"),                
                ],
              ),
            ),
             TextButton(
             style: TextButton.styleFrom(
                
-               overlayColor: Colors.blue.withOpacity(0.2), 
+               foregroundColor:Colors.black 
              ),
              onPressed: () {
-             
+             Navigator.push(context, MaterialPageRoute(builder: (context)=>const Analysis()));
              },
              child: Column(
-               mainAxisSize: MainAxisSize.min, // Use minimum space
+               mainAxisSize: MainAxisSize.min,
                children: [
-                 Icon(Icons.analytics_outlined, size: 18.0), // Your icon
-                //  SizedBox(height: 2.0),       // Optional space between icon and text
-                 Text("Analytics"),                 // Your text
+                 Icon(Icons.analytics_outlined, size: 18.0), 
+                 Text("Analytics"),                
                ],
              ),
            ), ],),
@@ -395,3 +423,4 @@ class _AnalyzepageState extends State<Analyzepage> {
     );
   }
 }
+

@@ -1,8 +1,12 @@
 import 'package:ai_scam_shield/analyzePage.dart';
-import 'package:ai_scam_shield/history.dart';
+import 'package:ai_scam_shield/user_service.dart';
+
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async{
+   WidgetsFlutterBinding.ensureInitialized();
+
+  await UserService.initUser();
   runApp(const MyApp());
 }
 
