@@ -27,7 +27,7 @@ class _analysisState extends State<Analysis> {
   }
 Future<void> fetchStats() async {
 
-  final url = Uri.parse("http://10.136.27.1:8080/stats/${UserService.userId}");
+  final url = Uri.parse("https://backend-api-d3ku.onrender.com/stats/${UserService.userId}");
 
   final response = await http.get(url);
 
@@ -140,10 +140,10 @@ Future<void> fetchStats() async {
               Navigator.push(context, MaterialPageRoute(builder: (context)=>const Analyzepage()));
             },
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Use minimum space
+              mainAxisSize: MainAxisSize.min, 
               children: [
                 Icon(Icons.shield_outlined, size: 18.0), 
-                Text("Analyze"),                 // Your text
+                Text("Analyze"),                
               ],
             ),
           ),

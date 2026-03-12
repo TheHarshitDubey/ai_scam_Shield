@@ -60,8 +60,8 @@ class _AnalyzepageState extends State<Analyzepage> {
       is_Scam = null;
     });
 
-    final url = Uri.parse("http://10.136.27.1:8080/chat");
-    // print("User ID: ${UserService.userId}");
+    final url = Uri.parse("https://backend-api-d3ku.onrender.com/chat");
+    print("User ID: ${UserService.userId}");
     try {
       final response = await http.post(
         url,
@@ -69,7 +69,7 @@ class _AnalyzepageState extends State<Analyzepage> {
         body: jsonEncode({"message": _Message.text,"user_id": UserService.userId}),
       );
 
-      // print ("Data :${response.body}");
+      print ("Data :${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         
@@ -94,7 +94,7 @@ class _AnalyzepageState extends State<Analyzepage> {
 
   Future<void> generateReply() async {
   Future<Map<String, dynamic>> fetchReply() async {
-    final url = Uri.parse("http://10.136.27.1:8080/generate-reply");
+    final url = Uri.parse("https://backend-api-d3ku.onrender.com/generate-reply");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -172,15 +172,15 @@ class _AnalyzepageState extends State<Analyzepage> {
             children: [
               Container(
                 margin: EdgeInsets.all(
-                    8), // CRITICAL: Adds space so shadow doesn't hit the edge and cut off
+                    8), 
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue.withOpacity(0.6), // Light shadow color
-                      blurRadius: 10, // Makes it blurry/soft
-                      spreadRadius: 2, // How far the shadow reaches
-                      offset: Offset(0, 4), // Shifts shadow down slightly
+                      color: Colors.blue.withOpacity(0.6), 
+                      blurRadius: 10, 
+                      spreadRadius: 2,
+                      offset: Offset(0, 4), 
                     ),
                   ],
                 ),

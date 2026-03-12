@@ -25,7 +25,7 @@ class _HistoryState extends State<History> {
   }
 
   Future<void> fetchHistory() async {
-    final url = Uri.parse("http://10.136.27.1:8080/history/${UserService.userId}");
+    final url = Uri.parse("https://backend-api-d3ku.onrender.com/history/${UserService.userId}");
 
     try {
       final response = await http.get(url);
