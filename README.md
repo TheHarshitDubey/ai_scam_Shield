@@ -34,7 +34,7 @@ This project combines mobile development, AI integration, and backend APIs to cr
 📱 App Screenshots
 
 Analyze Message Screen
-![Analyze](screenshots/home.jpeg)
+![Analyze](screenshots/Home.jpeg)
 
 
 <!-- Add screenshot here -->History Screen
