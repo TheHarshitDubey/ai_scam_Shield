@@ -33,15 +33,12 @@ This project combines mobile development, AI integration, and backend APIs to cr
 
 📱 App Screenshots
 
-Analyze Message Screen
+
 ![Analyze](screenshots/Home.jpeg)
-
-
-<!-- Add screenshot here -->History Screen
-
-<!-- Add screenshot here -->Analytics Dashboard
-
-<!-- Add screenshot here -->---
+![Analyze](screenshots/result.jpeg)
+![Analyze](screenshots/ai_reply.jpeg)
+![Analyze](screenshots/History.jpeg)
+![Analyze](screenshots/analytics.jpeg)
 
 🏗️ Architecture
 
